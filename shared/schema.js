@@ -1,6 +1,6 @@
-import { pgTable, text, serial, integer, boolean, timestamp, date } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
+import { pgTable, text, serial, integer, boolean, timestamp, date } from "drizzle-orm/pg-core"
+import { createInsertSchema } from "drizzle-zod"
+import { z } from "zod"
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -9,8 +9,8 @@ export const users = pgTable("users", {
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   major: text("major"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+  createdAt: timestamp("created_at").defaultNow()
+})
 
 export const subjects = pgTable("subjects", {
   id: serial("id").primaryKey(),
@@ -18,8 +18,8 @@ export const subjects = pgTable("subjects", {
   name: text("name").notNull(),
   code: text("code"),
   color: text("color").notNull().default("#2563EB"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+  createdAt: timestamp("created_at").defaultNow()
+})
 
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
@@ -33,8 +33,8 @@ export const tasks = pgTable("tasks", {
   estimatedHours: integer("estimated_hours").default(1),
   actualHours: integer("actual_hours").default(0),
   createdAt: timestamp("created_at").defaultNow(),
-  completedAt: timestamp("completed_at"),
-});
+  completedAt: timestamp("completed_at")
+})
 
 export const studySessions = pgTable("study_sessions", {
   id: serial("id").primaryKey(),
@@ -47,8 +47,8 @@ export const studySessions = pgTable("study_sessions", {
   endTime: timestamp("end_time").notNull(),
   actualDuration: integer("actual_duration"), // in minutes
   status: text("status").notNull().default("scheduled"), // scheduled, completed, missed
-  createdAt: timestamp("created_at").defaultNow(),
-});
+  createdAt: timestamp("created_at").defaultNow()
+})
 
 export const userStats = pgTable("user_stats", {
   id: serial("id").primaryKey(),
@@ -57,31 +57,31 @@ export const userStats = pgTable("user_stats", {
   tasksCompleted: integer("tasks_completed").default(0),
   studyHours: integer("study_hours").default(0), // in minutes
   focusSessions: integer("focus_sessions").default(0),
-  streakDays: integer("streak_days").default(0),
-});
+  streakDays: integer("streak_days").default(0)
+})
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
-  createdAt: true,
-});
+  createdAt: true
+})
 
 export const insertSubjectSchema = createInsertSchema(subjects).omit({
   id: true,
-  createdAt: true,
-});
+  createdAt: true
+})
 
 export const insertTaskSchema = createInsertSchema(tasks).omit({
   id: true,
   createdAt: true,
-  completedAt: true,
-});
+  completedAt: true
+})
 
 export const insertStudySessionSchema = createInsertSchema(studySessions).omit({
   id: true,
-  createdAt: true,
-});
+  createdAt: true
+})
 
 export const insertUserStatsSchema = createInsertSchema(userStats).omit({
-  id: true,
-});
+  id: true
+})

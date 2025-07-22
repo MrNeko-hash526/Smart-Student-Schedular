@@ -11,17 +11,17 @@ import { addDays, format } from "date-fns";
 
 export class DatabaseStorage {
   // User methods
-  async getUser(id: number): Promise<any | undefined> {
+  async getUser(id) {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<any | undefined> {
+  async getUserByUsername(username) {
     const [user] = await db.select().from(users).where(eq(users.username, username));
     return user || undefined;
   }
 
-  async createUser(insertUser: any): Promise<any> {
+  async createUser(insertUser) {
     const [user] = await db
       .insert(users)
       .values(insertUser)
@@ -30,16 +30,16 @@ export class DatabaseStorage {
   }
 
   // Subject methods
-  async getSubjects(userId: number): Promise<any[]> {
+  async getSubjects(userId) {
     return await db.select().from(subjects).where(eq(subjects.userId, userId));
   }
 
-  async getSubject(id: number): Promise<any | undefined> {
+  async getSubject(id) {
     const [subject] = await db.select().from(subjects).where(eq(subjects.id, id));
     return subject || undefined;
   }
 
-  async createSubject(insertSubject: any): Promise<any> {
+  async createSubject(insertSubject) {
     const [subject] = await db
       .insert(subjects)
       .values(insertSubject)
@@ -47,7 +47,7 @@ export class DatabaseStorage {
     return subject;
   }
 
-  async updateSubject(id: number, updateData: any): Promise<any | undefined> {
+  async updateSubject(id, updateData) {
     const [updated] = await db
       .update(subjects)
       .set(updateData)
@@ -56,13 +56,13 @@ export class DatabaseStorage {
     return updated || undefined;
   }
 
-  async deleteSubject(id: number): Promise<boolean> {
+  async deleteSubject(id) {
     const result = await db.delete(subjects).where(eq(subjects.id, id));
     return result.rowCount > 0;
   }
 
   // Task methods
-  async getTasks(userId: number): Promise<any[]> {
+  async getTasks(userId) {
     return await db
       .select({
         id: tasks.id,
@@ -89,7 +89,7 @@ export class DatabaseStorage {
       .where(eq(tasks.userId, userId));
   }
 
-  async getTask(id: number): Promise<any | undefined> {
+  async getTask(id) {
     const [task] = await db
       .select({
         id: tasks.id,
@@ -117,7 +117,7 @@ export class DatabaseStorage {
     return task || undefined;
   }
 
-  async createTask(insertTask: any): Promise<any> {
+  async createTask(insertTask) {
     const [task] = await db
       .insert(tasks)
       .values(insertTask)
@@ -126,7 +126,7 @@ export class DatabaseStorage {
     return await this.getTask(task.id);
   }
 
-  async updateTask(id: number, updateData: any): Promise<any | undefined> {
+  async updateTask(id, updateData) {
     const currentTask = await this.getTask(id);
     if (!currentTask) return undefined;
 
@@ -144,17 +144,17 @@ export class DatabaseStorage {
     return await this.getTask(updated.id);
   }
 
-  async deleteTask(id: number): Promise<boolean> {
+  async deleteTask(id) {
     const result = await db.delete(tasks).where(eq(tasks.id, id));
     return result.rowCount > 0;
   }
 
-  async getTasksByStatus(userId: number, status: string): Promise<any[]> {
+  async getTasksByStatus(userId, status) {
     const allTasks = await this.getTasks(userId);
     return allTasks.filter(task => task.status === status);
   }
 
-  async getUpcomingTasks(userId: number, days: number = 7): Promise<any[]> {
+  async getUpcomingTasks(userId, days = 7) {
     const now = new Date();
     const futureDate = addDays(now, days);
 
@@ -191,7 +191,7 @@ export class DatabaseStorage {
   }
 
   // Study session methods
-  async getStudySessions(userId: number): Promise<any[]> {
+  async getStudySessions(userId) {
     return await db
       .select({
         id: studySessions.id,
@@ -221,7 +221,7 @@ export class DatabaseStorage {
       .where(eq(studySessions.userId, userId));
   }
 
-  async getStudySession(id: number): Promise<any | undefined> {
+  async getStudySession(id) {
     const [session] = await db
       .select({
         id: studySessions.id,
@@ -252,7 +252,7 @@ export class DatabaseStorage {
     return session || undefined;
   }
 
-  async createStudySession(insertSession: any): Promise<any> {
+  async createStudySession(insertSession) {
     const [session] = await db
       .insert(studySessions)
       .values(insertSession)
@@ -261,7 +261,7 @@ export class DatabaseStorage {
     return await this.getStudySession(session.id);
   }
 
-  async updateStudySession(id: number, updateData: any): Promise<any | undefined> {
+  async updateStudySession(id, updateData) {
     const [updated] = await db
       .update(studySessions)
       .set(updateData)
@@ -272,12 +272,12 @@ export class DatabaseStorage {
     return await this.getStudySession(updated.id);
   }
 
-  async deleteStudySession(id: number): Promise<boolean> {
+  async deleteStudySession(id) {
     const result = await db.delete(studySessions).where(eq(studySessions.id, id));
     return result.rowCount > 0;
   }
 
-  async getTodaysSessions(userId: number): Promise<any[]> {
+  async getTodaysSessions(userId) {
     const today = new Date();
     const todayStr = format(today, 'yyyy-MM-dd');
 
@@ -317,7 +317,7 @@ export class DatabaseStorage {
   }
 
   // User stats methods
-  async getUserStats(userId: number, date: string): Promise<any | undefined> {
+  async getUserStats(userId, date) {
     const [stats] = await db
       .select()
       .from(userStats)
@@ -325,7 +325,7 @@ export class DatabaseStorage {
     return stats || undefined;
   }
 
-  async createOrUpdateUserStats(insertStats: any): Promise<any> {
+  async createOrUpdateUserStats(insertStats) {
     const existing = await this.getUserStats(insertStats.userId, insertStats.date);
 
     if (existing) {
@@ -344,7 +344,7 @@ export class DatabaseStorage {
     }
   }
 
-  async getWeeklyStats(userId: number): Promise<any[]> {
+  async getWeeklyStats(userId) {
     const today = new Date();
     const weekAgo = addDays(today, -7);
 
