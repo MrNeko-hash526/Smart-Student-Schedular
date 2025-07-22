@@ -1,5 +1,5 @@
 import { Bell } from "lucide-react";
-import StudyPlannerLogo from "@/components/ui/logo";
+import StudyPlannerLogo from "../ui/logo";
 
 export default function MobileHeader() {
   return (

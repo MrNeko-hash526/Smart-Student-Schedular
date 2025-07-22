@@ -5,7 +5,7 @@ import {
   studySessions, 
   userStats
 } from "../shared/schema.js";
-import { db } from "./db";
+import { db } from "./db.js";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { addDays, format } from "date-fns";
 
