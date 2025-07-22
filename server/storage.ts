@@ -3,447 +3,399 @@ import {
   subjects, 
   tasks, 
   studySessions, 
-  userStats,
-  type User, 
-  type InsertUser,
-  type Subject,
-  type InsertSubject,
-  type Task,
-  type InsertTask,
-  type StudySession,
-  type InsertStudySession,
-  type UserStats,
-  type InsertUserStats,
-  type TaskWithSubject,
-  type StudySessionWithDetails
+  userStats
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { addDays, format } from "date-fns";
 
 export interface IStorage {
   // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUser(id: number): Promise<any | undefined>;
+  getUserByUsername(username: string): Promise<any | undefined>;
+  createUser(user: any): Promise<any>;
 
   // Subject methods
-  getSubjects(userId: number): Promise<Subject[]>;
-  getSubject(id: number): Promise<Subject | undefined>;
-  createSubject(subject: InsertSubject): Promise<Subject>;
-  updateSubject(id: number, subject: Partial<Subject>): Promise<Subject | undefined>;
+  getSubjects(userId: number): Promise<any[]>;
+  getSubject(id: number): Promise<any | undefined>;
+  createSubject(subject: any): Promise<any>;
+  updateSubject(id: number, subject: any): Promise<any | undefined>;
   deleteSubject(id: number): Promise<boolean>;
 
   // Task methods
-  getTasks(userId: number): Promise<TaskWithSubject[]>;
-  getTask(id: number): Promise<TaskWithSubject | undefined>;
-  createTask(task: InsertTask): Promise<TaskWithSubject>;
-  updateTask(id: number, task: Partial<Task>): Promise<TaskWithSubject | undefined>;
+  getTasks(userId: number): Promise<any[]>;
+  getTask(id: number): Promise<any | undefined>;
+  createTask(task: any): Promise<any>;
+  updateTask(id: number, task: any): Promise<any | undefined>;
   deleteTask(id: number): Promise<boolean>;
-  getTasksByStatus(userId: number, status: string): Promise<TaskWithSubject[]>;
-  getUpcomingTasks(userId: number, days?: number): Promise<TaskWithSubject[]>;
+  getTasksByStatus(userId: number, status: string): Promise<any[]>;
+  getUpcomingTasks(userId: number, days?: number): Promise<any[]>;
 
   // Study session methods
-  getStudySessions(userId: number): Promise<StudySessionWithDetails[]>;
-  getStudySession(id: number): Promise<StudySessionWithDetails | undefined>;
-  createStudySession(session: InsertStudySession): Promise<StudySessionWithDetails>;
-  updateStudySession(id: number, session: Partial<StudySession>): Promise<StudySessionWithDetails | undefined>;
+  getStudySessions(userId: number): Promise<any[]>;
+  getStudySession(id: number): Promise<any | undefined>;
+  createStudySession(session: any): Promise<any>;
+  updateStudySession(id: number, session: any): Promise<any | undefined>;
   deleteStudySession(id: number): Promise<boolean>;
-  getTodaysSessions(userId: number): Promise<StudySessionWithDetails[]>;
+  getTodaysSessions(userId: number): Promise<any[]>;
 
   // User stats methods
-  getUserStats(userId: number, date: string): Promise<UserStats | undefined>;
-  createOrUpdateUserStats(stats: InsertUserStats): Promise<UserStats>;
-  getWeeklyStats(userId: number): Promise<UserStats[]>;
+  getUserStats(userId: number, date: string): Promise<any | undefined>;
+  createOrUpdateUserStats(stats: any): Promise<any>;
+  getWeeklyStats(userId: number): Promise<any[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<number, User>;
-  private subjects: Map<number, Subject>;
-  private tasks: Map<number, Task>;
-  private studySessions: Map<number, StudySession>;
-  private userStats: Map<string, UserStats>;
-  
-  private currentUserId: number;
-  private currentSubjectId: number;
-  private currentTaskId: number;
-  private currentSessionId: number;
-  private currentStatsId: number;
-
-  constructor() {
-    this.users = new Map();
-    this.subjects = new Map();
-    this.tasks = new Map();
-    this.studySessions = new Map();
-    this.userStats = new Map();
-    
-    this.currentUserId = 1;
-    this.currentSubjectId = 1;
-    this.currentTaskId = 1;
-    this.currentSessionId = 1;
-    this.currentStatsId = 1;
-
-    this.initializeDemo();
-  }
-
-  private initializeDemo() {
-    // Create demo user
-    const demoUser: User = {
-      id: 1,
-      username: "demo",
-      password: "demo",
-      firstName: "Alex",
-      lastName: "Chen",
-      major: "Computer Science",
-      createdAt: new Date(),
-    };
-    this.users.set(1, demoUser);
-    this.currentUserId = 2;
-
-    // Create demo subjects
-    const subjects = [
-      { id: 1, userId: 1, name: "Linear Algebra", code: "MATH 2415", color: "#2563EB", createdAt: new Date() },
-      { id: 2, userId: 1, name: "Data Structures", code: "CS 3345", color: "#7C3AED", createdAt: new Date() },
-      { id: 3, userId: 1, name: "Physics", code: "PHYS 2326", color: "#059669", createdAt: new Date() },
-      { id: 4, userId: 1, name: "Chemistry", code: "CHEM 1312", color: "#D97706", createdAt: new Date() },
-    ];
-    
-    subjects.forEach(subject => {
-      this.subjects.set(subject.id, subject);
-    });
-    this.currentSubjectId = 5;
-
-    // Create demo tasks
-    const tasks = [
-      {
-        id: 1,
-        userId: 1,
-        subjectId: 1,
-        title: "Chapter 5: Eigenvalues",
-        description: "Study eigenvalues and eigenvectors",
-        priority: "high" as const,
-        status: "pending" as const,
-        dueDate: "2025-03-15",
-        estimatedHours: 3,
-        actualHours: 0,
-        createdAt: new Date(),
-        completedAt: null,
-      },
-      {
-        id: 2,
-        userId: 1,
-        subjectId: 2,
-        title: "Binary Trees Practice",
-        description: "Implement binary tree operations",
-        priority: "medium" as const,
-        status: "in-progress" as const,
-        dueDate: "2025-03-20",
-        estimatedHours: 4,
-        actualHours: 1,
-        createdAt: new Date(),
-        completedAt: null,
-      },
-      {
-        id: 3,
-        userId: 1,
-        subjectId: 3,
-        title: "Physics Lab Report",
-        description: "Complete analysis and conclusion",
-        priority: "high" as const,
-        status: "pending" as const,
-        dueDate: "2025-03-12",
-        estimatedHours: 2,
-        actualHours: 0,
-        createdAt: new Date(),
-        completedAt: null,
-      },
-    ];
-
-    tasks.forEach(task => {
-      this.tasks.set(task.id, task);
-    });
-    this.currentTaskId = 4;
-
-    // Create demo study sessions for today
-    const today = new Date();
-    const sessions = [
-      {
-        id: 1,
-        userId: 1,
-        taskId: 1,
-        subjectId: 1,
-        title: "Linear Algebra",
-        description: "Chapter 5: Eigenvalues",
-        startTime: new Date(today.setHours(9, 0, 0, 0)),
-        endTime: new Date(today.setHours(10, 30, 0, 0)),
-        actualDuration: 90,
-        status: "scheduled" as const,
-        createdAt: new Date(),
-      },
-      {
-        id: 2,
-        userId: 1,
-        taskId: 2,
-        subjectId: 2,
-        title: "Data Structures",
-        description: "Binary Trees Practice",
-        startTime: new Date(today.setHours(14, 0, 0, 0)),
-        endTime: new Date(today.setHours(16, 0, 0, 0)),
-        actualDuration: 120,
-        status: "scheduled" as const,
-        createdAt: new Date(),
-      },
-      {
-        id: 3,
-        userId: 1,
-        taskId: 3,
-        subjectId: 3,
-        title: "Physics Lab Report",
-        description: "Analysis & Conclusion",
-        startTime: new Date(today.setHours(19, 0, 0, 0)),
-        endTime: new Date(today.setHours(20, 0, 0, 0)),
-        actualDuration: 60,
-        status: "scheduled" as const,
-        createdAt: new Date(),
-      },
-    ];
-
-    sessions.forEach(session => {
-      this.studySessions.set(session.id, session);
-    });
-    this.currentSessionId = 4;
-  }
-
+export class DatabaseStorage implements IStorage {
   // User methods
-  async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+  async getUser(id: number): Promise<any | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+  async getUserByUsername(username: string): Promise<any | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = {
-      ...insertUser,
-      id,
-      createdAt: new Date(),
-    };
-    this.users.set(id, user);
+  async createUser(insertUser: any): Promise<any> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   // Subject methods
-  async getSubjects(userId: number): Promise<Subject[]> {
-    return Array.from(this.subjects.values()).filter(subject => subject.userId === userId);
+  async getSubjects(userId: number): Promise<any[]> {
+    return await db.select().from(subjects).where(eq(subjects.userId, userId));
   }
 
-  async getSubject(id: number): Promise<Subject | undefined> {
-    return this.subjects.get(id);
+  async getSubject(id: number): Promise<any | undefined> {
+    const [subject] = await db.select().from(subjects).where(eq(subjects.id, id));
+    return subject || undefined;
   }
 
-  async createSubject(insertSubject: InsertSubject): Promise<Subject> {
-    const id = this.currentSubjectId++;
-    const subject: Subject = {
-      ...insertSubject,
-      id,
-      createdAt: new Date(),
-    };
-    this.subjects.set(id, subject);
+  async createSubject(insertSubject: any): Promise<any> {
+    const [subject] = await db
+      .insert(subjects)
+      .values(insertSubject)
+      .returning();
     return subject;
   }
 
-  async updateSubject(id: number, updateData: Partial<Subject>): Promise<Subject | undefined> {
-    const subject = this.subjects.get(id);
-    if (!subject) return undefined;
-
-    const updated = { ...subject, ...updateData };
-    this.subjects.set(id, updated);
-    return updated;
+  async updateSubject(id: number, updateData: any): Promise<any | undefined> {
+    const [updated] = await db
+      .update(subjects)
+      .set(updateData)
+      .where(eq(subjects.id, id))
+      .returning();
+    return updated || undefined;
   }
 
   async deleteSubject(id: number): Promise<boolean> {
-    return this.subjects.delete(id);
+    const result = await db.delete(subjects).where(eq(subjects.id, id));
+    return result.rowCount > 0;
   }
 
   // Task methods
-  async getTasks(userId: number): Promise<TaskWithSubject[]> {
-    const userTasks = Array.from(this.tasks.values()).filter(task => task.userId === userId);
-    return userTasks.map(task => ({
-      ...task,
-      subject: task.subjectId ? this.subjects.get(task.subjectId) : undefined,
-    }));
+  async getTasks(userId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: tasks.id,
+        userId: tasks.userId,
+        subjectId: tasks.subjectId,
+        title: tasks.title,
+        description: tasks.description,
+        priority: tasks.priority,
+        status: tasks.status,
+        dueDate: tasks.dueDate,
+        estimatedHours: tasks.estimatedHours,
+        actualHours: tasks.actualHours,
+        createdAt: tasks.createdAt,
+        completedAt: tasks.completedAt,
+        subject: {
+          id: subjects.id,
+          name: subjects.name,
+          code: subjects.code,
+          color: subjects.color
+        }
+      })
+      .from(tasks)
+      .leftJoin(subjects, eq(tasks.subjectId, subjects.id))
+      .where(eq(tasks.userId, userId));
   }
 
-  async getTask(id: number): Promise<TaskWithSubject | undefined> {
-    const task = this.tasks.get(id);
-    if (!task) return undefined;
-
-    return {
-      ...task,
-      subject: task.subjectId ? this.subjects.get(task.subjectId) : undefined,
-    };
+  async getTask(id: number): Promise<any | undefined> {
+    const [task] = await db
+      .select({
+        id: tasks.id,
+        userId: tasks.userId,
+        subjectId: tasks.subjectId,
+        title: tasks.title,
+        description: tasks.description,
+        priority: tasks.priority,
+        status: tasks.status,
+        dueDate: tasks.dueDate,
+        estimatedHours: tasks.estimatedHours,
+        actualHours: tasks.actualHours,
+        createdAt: tasks.createdAt,
+        completedAt: tasks.completedAt,
+        subject: {
+          id: subjects.id,
+          name: subjects.name,
+          code: subjects.code,
+          color: subjects.color
+        }
+      })
+      .from(tasks)
+      .leftJoin(subjects, eq(tasks.subjectId, subjects.id))
+      .where(eq(tasks.id, id));
+    return task || undefined;
   }
 
-  async createTask(insertTask: InsertTask): Promise<TaskWithSubject> {
-    const id = this.currentTaskId++;
-    const task: Task = {
-      ...insertTask,
-      id,
-      createdAt: new Date(),
-      completedAt: null,
-    };
-    this.tasks.set(id, task);
-
-    return {
-      ...task,
-      subject: task.subjectId ? this.subjects.get(task.subjectId) : undefined,
-    };
-  }
-
-  async updateTask(id: number, updateData: Partial<Task>): Promise<TaskWithSubject | undefined> {
-    const task = this.tasks.get(id);
-    if (!task) return undefined;
-
-    const updated = { ...task, ...updateData };
-    if (updateData.status === "completed" && task.status !== "completed") {
-      updated.completedAt = new Date();
-    }
+  async createTask(insertTask: any): Promise<any> {
+    const [task] = await db
+      .insert(tasks)
+      .values(insertTask)
+      .returning();
     
-    this.tasks.set(id, updated);
-    return {
-      ...updated,
-      subject: updated.subjectId ? this.subjects.get(updated.subjectId) : undefined,
-    };
+    return await this.getTask(task.id);
+  }
+
+  async updateTask(id: number, updateData: any): Promise<any | undefined> {
+    const currentTask = await this.getTask(id);
+    if (!currentTask) return undefined;
+
+    if (updateData.status === "completed" && currentTask.status !== "completed") {
+      updateData.completedAt = new Date();
+    }
+
+    const [updated] = await db
+      .update(tasks)
+      .set(updateData)
+      .where(eq(tasks.id, id))
+      .returning();
+    
+    if (!updated) return undefined;
+    return await this.getTask(updated.id);
   }
 
   async deleteTask(id: number): Promise<boolean> {
-    return this.tasks.delete(id);
+    const result = await db.delete(tasks).where(eq(tasks.id, id));
+    return result.rowCount > 0;
   }
 
-  async getTasksByStatus(userId: number, status: string): Promise<TaskWithSubject[]> {
-    const tasks = await this.getTasks(userId);
-    return tasks.filter(task => task.status === status);
+  async getTasksByStatus(userId: number, status: string): Promise<any[]> {
+    const allTasks = await this.getTasks(userId);
+    return allTasks.filter(task => task.status === status);
   }
 
-  async getUpcomingTasks(userId: number, days: number = 7): Promise<TaskWithSubject[]> {
-    const tasks = await this.getTasks(userId);
+  async getUpcomingTasks(userId: number, days: number = 7): Promise<any[]> {
     const now = new Date();
-    const futureDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+    const futureDate = addDays(now, days);
 
-    return tasks.filter(task => {
-      if (!task.dueDate) return false;
-      const dueDate = new Date(task.dueDate);
-      return dueDate >= now && dueDate <= futureDate && task.status !== "completed";
-    });
+    return await db
+      .select({
+        id: tasks.id,
+        userId: tasks.userId,
+        subjectId: tasks.subjectId,
+        title: tasks.title,
+        description: tasks.description,
+        priority: tasks.priority,
+        status: tasks.status,
+        dueDate: tasks.dueDate,
+        estimatedHours: tasks.estimatedHours,
+        actualHours: tasks.actualHours,
+        createdAt: tasks.createdAt,
+        completedAt: tasks.completedAt,
+        subject: {
+          id: subjects.id,
+          name: subjects.name,
+          code: subjects.code,
+          color: subjects.color
+        }
+      })
+      .from(tasks)
+      .leftJoin(subjects, eq(tasks.subjectId, subjects.id))
+      .where(
+        and(
+          eq(tasks.userId, userId),
+          gte(tasks.dueDate, format(now, 'yyyy-MM-dd')),
+          lte(tasks.dueDate, format(futureDate, 'yyyy-MM-dd'))
+        )
+      );
   }
 
   // Study session methods
-  async getStudySessions(userId: number): Promise<StudySessionWithDetails[]> {
-    const userSessions = Array.from(this.studySessions.values())
-      .filter(session => session.userId === userId);
-
-    return userSessions.map(session => ({
-      ...session,
-      task: session.taskId ? this.tasks.get(session.taskId) : undefined,
-      subject: session.subjectId ? this.subjects.get(session.subjectId) : undefined,
-    }));
+  async getStudySessions(userId: number): Promise<any[]> {
+    return await db
+      .select({
+        id: studySessions.id,
+        userId: studySessions.userId,
+        taskId: studySessions.taskId,
+        subjectId: studySessions.subjectId,
+        title: studySessions.title,
+        description: studySessions.description,
+        startTime: studySessions.startTime,
+        endTime: studySessions.endTime,
+        actualDuration: studySessions.actualDuration,
+        status: studySessions.status,
+        createdAt: studySessions.createdAt,
+        task: {
+          id: tasks.id,
+          title: tasks.title
+        },
+        subject: {
+          id: subjects.id,
+          name: subjects.name,
+          color: subjects.color
+        }
+      })
+      .from(studySessions)
+      .leftJoin(tasks, eq(studySessions.taskId, tasks.id))
+      .leftJoin(subjects, eq(studySessions.subjectId, subjects.id))
+      .where(eq(studySessions.userId, userId));
   }
 
-  async getStudySession(id: number): Promise<StudySessionWithDetails | undefined> {
-    const session = this.studySessions.get(id);
-    if (!session) return undefined;
-
-    return {
-      ...session,
-      task: session.taskId ? this.tasks.get(session.taskId) : undefined,
-      subject: session.subjectId ? this.subjects.get(session.subjectId) : undefined,
-    };
+  async getStudySession(id: number): Promise<any | undefined> {
+    const [session] = await db
+      .select({
+        id: studySessions.id,
+        userId: studySessions.userId,
+        taskId: studySessions.taskId,
+        subjectId: studySessions.subjectId,
+        title: studySessions.title,
+        description: studySessions.description,
+        startTime: studySessions.startTime,
+        endTime: studySessions.endTime,
+        actualDuration: studySessions.actualDuration,
+        status: studySessions.status,
+        createdAt: studySessions.createdAt,
+        task: {
+          id: tasks.id,
+          title: tasks.title
+        },
+        subject: {
+          id: subjects.id,
+          name: subjects.name,
+          color: subjects.color
+        }
+      })
+      .from(studySessions)
+      .leftJoin(tasks, eq(studySessions.taskId, tasks.id))
+      .leftJoin(subjects, eq(studySessions.subjectId, subjects.id))
+      .where(eq(studySessions.id, id));
+    return session || undefined;
   }
 
-  async createStudySession(insertSession: InsertStudySession): Promise<StudySessionWithDetails> {
-    const id = this.currentSessionId++;
-    const session: StudySession = {
-      ...insertSession,
-      id,
-      createdAt: new Date(),
-    };
-    this.studySessions.set(id, session);
-
-    return {
-      ...session,
-      task: session.taskId ? this.tasks.get(session.taskId) : undefined,
-      subject: session.subjectId ? this.subjects.get(session.subjectId) : undefined,
-    };
+  async createStudySession(insertSession: any): Promise<any> {
+    const [session] = await db
+      .insert(studySessions)
+      .values(insertSession)
+      .returning();
+    
+    return await this.getStudySession(session.id);
   }
 
-  async updateStudySession(id: number, updateData: Partial<StudySession>): Promise<StudySessionWithDetails | undefined> {
-    const session = this.studySessions.get(id);
-    if (!session) return undefined;
-
-    const updated = { ...session, ...updateData };
-    this.studySessions.set(id, updated);
-
-    return {
-      ...updated,
-      task: updated.taskId ? this.tasks.get(updated.taskId) : undefined,
-      subject: updated.subjectId ? this.subjects.get(updated.subjectId) : undefined,
-    };
+  async updateStudySession(id: number, updateData: any): Promise<any | undefined> {
+    const [updated] = await db
+      .update(studySessions)
+      .set(updateData)
+      .where(eq(studySessions.id, id))
+      .returning();
+    
+    if (!updated) return undefined;
+    return await this.getStudySession(updated.id);
   }
 
   async deleteStudySession(id: number): Promise<boolean> {
-    return this.studySessions.delete(id);
+    const result = await db.delete(studySessions).where(eq(studySessions.id, id));
+    return result.rowCount > 0;
   }
 
-  async getTodaysSessions(userId: number): Promise<StudySessionWithDetails[]> {
+  async getTodaysSessions(userId: number): Promise<any[]> {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const todayStr = format(today, 'yyyy-MM-dd');
 
-    const sessions = await this.getStudySessions(userId);
-    return sessions.filter(session => {
-      const sessionDate = new Date(session.startTime);
-      return sessionDate >= today && sessionDate < tomorrow;
-    });
+    return await db
+      .select({
+        id: studySessions.id,
+        userId: studySessions.userId,
+        taskId: studySessions.taskId,
+        subjectId: studySessions.subjectId,
+        title: studySessions.title,
+        description: studySessions.description,
+        startTime: studySessions.startTime,
+        endTime: studySessions.endTime,
+        actualDuration: studySessions.actualDuration,
+        status: studySessions.status,
+        createdAt: studySessions.createdAt,
+        task: {
+          id: tasks.id,
+          title: tasks.title
+        },
+        subject: {
+          id: subjects.id,
+          name: subjects.name,
+          color: subjects.color
+        }
+      })
+      .from(studySessions)
+      .leftJoin(tasks, eq(studySessions.taskId, tasks.id))
+      .leftJoin(subjects, eq(studySessions.subjectId, subjects.id))
+      .where(
+        and(
+          eq(studySessions.userId, userId),
+          gte(studySessions.startTime, todayStr),
+          lte(studySessions.startTime, todayStr + ' 23:59:59')
+        )
+      );
   }
 
   // User stats methods
-  async getUserStats(userId: number, date: string): Promise<UserStats | undefined> {
-    const key = `${userId}-${date}`;
-    return this.userStats.get(key);
+  async getUserStats(userId: number, date: string): Promise<any | undefined> {
+    const [stats] = await db
+      .select()
+      .from(userStats)
+      .where(and(eq(userStats.userId, userId), eq(userStats.date, date)));
+    return stats || undefined;
   }
 
-  async createOrUpdateUserStats(insertStats: InsertUserStats): Promise<UserStats> {
-    const key = `${insertStats.userId}-${insertStats.date}`;
-    const existing = this.userStats.get(key);
+  async createOrUpdateUserStats(insertStats: any): Promise<any> {
+    const existing = await this.getUserStats(insertStats.userId, insertStats.date);
 
     if (existing) {
-      const updated = { ...existing, ...insertStats };
-      this.userStats.set(key, updated);
+      const [updated] = await db
+        .update(userStats)
+        .set(insertStats)
+        .where(and(eq(userStats.userId, insertStats.userId), eq(userStats.date, insertStats.date)))
+        .returning();
       return updated;
     } else {
-      const id = this.currentStatsId++;
-      const stats: UserStats = {
-        ...insertStats,
-        id,
-      };
-      this.userStats.set(key, stats);
-      return stats;
+      const [created] = await db
+        .insert(userStats)
+        .values(insertStats)
+        .returning();
+      return created;
     }
   }
 
-  async getWeeklyStats(userId: number): Promise<UserStats[]> {
+  async getWeeklyStats(userId: number): Promise<any[]> {
     const today = new Date();
-    const weekAgo = new Date(today);
-    weekAgo.setDate(weekAgo.getDate() - 7);
+    const weekAgo = addDays(today, -7);
 
-    return Array.from(this.userStats.values())
-      .filter(stats => {
-        if (stats.userId !== userId) return false;
-        const statsDate = new Date(stats.date);
-        return statsDate >= weekAgo && statsDate <= today;
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    return await db
+      .select()
+      .from(userStats)
+      .where(
+        and(
+          eq(userStats.userId, userId),
+          gte(userStats.date, format(weekAgo, 'yyyy-MM-dd')),
+          lte(userStats.date, format(today, 'yyyy-MM-dd'))
+        )
+      )
+      .orderBy(desc(userStats.date));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
