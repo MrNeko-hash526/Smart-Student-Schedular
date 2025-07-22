@@ -36,9 +36,9 @@
 
 1. **Clone the repository:**
 
-   ```bash
-   git clone https://github.com/MrNeko-hash526/Smart-Student-Schedular.git
-   cd Smart-Student-Schedular
+```bash
+git clone https://github.com/MrNeko-hash526/Smart-Student-Schedular.git
+cd Smart-Student-Schedular
 
 Install dependencies:
 ```
