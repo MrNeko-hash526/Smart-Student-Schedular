@@ -1,15 +1,10 @@
-
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-const react = (await import("@vitejs/plugin-react")).default;
-const runtimeErrorOverlay = (await import("@replit/vite-plugin-runtime-error-modal")).default;
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-
 export default async function viteConfig() {
+  const react = (await import("@vitejs/plugin-react")).default;
+  const runtimeErrorOverlay = (await import("@replit/vite-plugin-runtime-error-modal")).default;
   const plugins = [
     react({
       include: "**/*.{jsx,js}",
@@ -20,6 +15,7 @@ export default async function viteConfig() {
     const cartographer = (await import("@replit/vite-plugin-cartographer")).cartographer;
     plugins.push(cartographer());
   }
+  const __dirname = dirname(fileURLToPath(import.meta.url));
   return {
     plugins,
     resolve: {
