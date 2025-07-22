@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
-import { Home, Calendar, CheckSquare, BarChart3, BookOpen, Sparkles } from "lucide-react";
+import { Home, Calendar, CheckSquare, BarChart3, Sparkles } from "lucide-react";
+import StudyPlannerLogo from "@/components/ui/logo";
 
 export default function DesktopSidebar() {
   const [location] = useLocation();
@@ -17,9 +18,7 @@ export default function DesktopSidebar() {
         {/* Header */}
         <div className="p-6 border-b border-white/20">
           <div className="flex items-center space-x-3">
-            <div className="gradient-primary w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
+            <StudyPlannerLogo size="md" />
             <div>
               <h1 className="text-xl font-bold text-gradient">StudyFlow</h1>
               <p className="text-xs text-gray-500">Smart Study Planner</p>
