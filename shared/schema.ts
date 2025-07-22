@@ -85,29 +85,3 @@ export const insertStudySessionSchema = createInsertSchema(studySessions).omit({
 export const insertUserStatsSchema = createInsertSchema(userStats).omit({
   id: true,
 });
-
-// Types
-export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
-
-export type Subject = typeof subjects.$inferSelect;
-export type InsertSubject = z.infer<typeof insertSubjectSchema>;
-
-export type Task = typeof tasks.$inferSelect;
-export type InsertTask = z.infer<typeof insertTaskSchema>;
-
-export type StudySession = typeof studySessions.$inferSelect;
-export type InsertStudySession = z.infer<typeof insertStudySessionSchema>;
-
-export type UserStats = typeof userStats.$inferSelect;
-export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
-
-// Extended types for API responses
-export type TaskWithSubject = Task & {
-  subject?: Subject;
-};
-
-export type StudySessionWithDetails = StudySession & {
-  task?: Task;
-  subject?: Subject;
-};

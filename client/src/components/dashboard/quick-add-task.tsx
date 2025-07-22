@@ -5,7 +5,7 @@ import { insertTaskSchema } from "@shared/schema";
 import { useCreateTask } from "@/hooks/use-tasks";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { Plus } from "lucide-react";
+import { Plus, CheckSquare, Zap, Calendar, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,7 +28,7 @@ export default function QuickAddTask() {
     },
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -40,7 +40,7 @@ export default function QuickAddTask() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values) => {
     const taskData = {
       ...values,
       subjectId: values.subjectId ? parseInt(values.subjectId) : null,
@@ -51,8 +51,13 @@ export default function QuickAddTask() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Add Task</h3>
+    <div className="card-modern p-6">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+          <Zap className="w-5 h-5 text-white" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-900">Quick Add Task</h3>
+      </div>
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

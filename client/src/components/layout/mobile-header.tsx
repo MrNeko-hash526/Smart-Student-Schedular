@@ -1,18 +1,21 @@
-import { Bell, GraduationCap } from "lucide-react";
+import { Bell, BookOpen } from "lucide-react";
 
 export default function MobileHeader() {
   return (
-    <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3">
+    <header className="md:hidden glass-card border-b border-white/20 px-4 py-4 sticky top-0 z-50">
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <GraduationCap className="w-5 h-5 text-white" />
+        <div className="flex items-center space-x-3">
+          <div className="gradient-primary w-8 h-8 rounded-xl flex items-center justify-center shadow-lg">
+            <BookOpen className="w-5 h-5 text-white" />
           </div>
-          <span className="ml-3 text-lg font-semibold text-gray-900">StudyFlow</span>
+          <div>
+            <h1 className="text-lg font-bold text-gradient">StudyFlow</h1>
+            <p className="text-xs text-gray-500 -mt-1">Smart Study Planner</p>
+          </div>
         </div>
-        <button className="relative p-2">
+        <button className="relative p-2 rounded-xl bg-white/50 hover:bg-white/70 transition-all duration-300">
           <Bell className="w-5 h-5 text-gray-600" />
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-br from-red-400 to-pink-500 rounded-full shadow-lg"></span>
         </button>
       </div>
     </header>

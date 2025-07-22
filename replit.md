@@ -2,11 +2,14 @@
 
 ## Overview
 
-StudyFlow is a comprehensive student study management application built with a modern full-stack TypeScript architecture. The application helps students organize their academic tasks, plan study sessions, track progress, and analyze their learning patterns through an intelligent dashboard system.
+StudyFlow is a comprehensive student study management application built with React.js and modern web technologies. The application helps students organize their academic tasks, manage study sessions, track progress, and analyze their learning patterns through a beautiful dashboard. No AI features - just clean, effective study planning tools.
 
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+- Preferred communication style: Simple, everyday language
+- Technology: React.js (JavaScript) instead of TypeScript
+- No AI features: Remove AI study planner functionality
+- Design: Fresh, modern redesign requested
 
 ## System Architecture
 

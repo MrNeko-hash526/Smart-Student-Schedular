@@ -1,19 +1,24 @@
 import { useTasks } from "@/hooks/use-tasks";
 import { Progress } from "@/components/ui/progress";
-import { Trophy } from "lucide-react";
+import { Trophy, Target, TrendingUp } from "lucide-react";
 
 export default function ProgressOverview() {
   const { data: tasks, isLoading } = useTasks();
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week's Progress</h3>
-        <div className="space-y-4">
+      <div className="card-modern p-6">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center">
+            <Trophy className="w-5 h-5 text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900">This Week's Progress</h3>
+        </div>
+        <div className="space-y-6">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-2 bg-gray-200 rounded"></div>
+              <div className="h-4 bg-gray-200 rounded mb-3"></div>
+              <div className="h-3 bg-gray-300 rounded"></div>
             </div>
           ))}
         </div>

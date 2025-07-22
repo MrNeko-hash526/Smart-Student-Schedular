@@ -1,20 +1,23 @@
 import { useUpcomingTasks } from "@/hooks/use-tasks";
 import { format, differenceInDays } from "date-fns";
+import { Clock, AlertTriangle, Calendar } from "lucide-react";
 
 export default function UpcomingDeadlines() {
   const { data: tasks, isLoading } = useUpcomingTasks();
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Upcoming Deadlines</h3>
-          <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+      <div className="card-modern p-6">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl flex items-center justify-center">
+            <Clock className="w-5 h-5 text-white" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900">Upcoming Deadlines</h3>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="p-3 bg-gray-100 rounded-lg animate-pulse">
-              <div className="h-4 bg-gray-300 rounded mb-2"></div>
+            <div key={i} className="glass-card p-4 animate-pulse">
+              <div className="h-4 bg-gray-300 rounded mb-3"></div>
               <div className="h-3 bg-gray-200 rounded"></div>
             </div>
           ))}

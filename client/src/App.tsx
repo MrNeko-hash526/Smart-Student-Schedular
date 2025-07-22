@@ -28,11 +28,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen">
           <MobileHeader />
           <DesktopSidebar />
           
-          <main className="md:ml-64 pb-20 md:pb-0">
+          <main className="md:ml-72 pb-24 md:pb-0 min-h-screen">
             <Router />
           </main>
           

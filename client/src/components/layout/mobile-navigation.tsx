@@ -12,18 +12,24 @@ export default function MobileNavigation() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 md:hidden z-50">
-      <div className="flex justify-around py-2">
+    <nav className="fixed bottom-0 left-0 right-0 glass-card border-t border-white/20 md:hidden z-50 safe-area-bottom">
+      <div className="flex justify-around py-3 px-2">
         {navItems.map((item) => {
           const isActive = location === item.path;
           const Icon = item.icon;
           
           return (
             <Link key={item.path} href={item.path}>
-              <a className={`flex flex-col items-center p-2 ${isActive ? 'text-primary' : 'text-gray-400'}`}>
-                <Icon className="w-5 h-5" />
-                <span className="text-xs mt-1">{item.label}</span>
-              </a>
+              <div className={`flex flex-col items-center px-4 py-2 rounded-xl transition-all duration-300 ${
+                isActive 
+                  ? 'bg-gradient-to-br from-violet-500 to-blue-500 text-white shadow-lg transform scale-110' 
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-white/50'
+              }`}>
+                <Icon className={`w-5 h-5 ${isActive ? 'text-white' : ''}`} />
+                <span className={`text-xs mt-1 font-medium ${isActive ? 'text-white' : ''}`}>
+                  {item.label}
+                </span>
+              </div>
             </Link>
           );
         })}
