@@ -4,7 +4,7 @@ import {
   tasks, 
   studySessions, 
   userStats
-} from "@shared/schema";
+} from "../shared/schema.js";
 import { db } from "./db";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { addDays, format } from "date-fns";
