@@ -1,6 +1,6 @@
 import { createServer } from "http";
-import { storage } from "./storage";
-import { insertTaskSchema, insertStudySessionSchema, insertSubjectSchema } from "@shared/schema";
+import { storage } from "./storage.js";
+import { insertTaskSchema, insertStudySessionSchema, insertSubjectSchema } from "../shared/schema.js";
 import { z } from "zod";
 
 export async function registerRoutes(app) {
