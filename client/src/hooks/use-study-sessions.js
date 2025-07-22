@@ -1,10 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import type { StudySessionWithDetails } from "@shared/schema";
 
 export function useStudySessions() {
-  return useQuery<StudySessionWithDetails[]>({
+  return useQuery({
     queryKey: ["/api/study-sessions"],
     queryFn: async () => {
       const response = await api.studySessions.getAll();
@@ -14,7 +13,7 @@ export function useStudySessions() {
 }
 
 export function useTodaysStudySessions() {
-  return useQuery<StudySessionWithDetails[]>({
+  return useQuery({
     queryKey: ["/api/study-sessions/today"],
     queryFn: async () => {
       const response = await api.studySessions.getToday();
@@ -28,7 +27,7 @@ export function useCreateStudySession() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (session: any) => {
+    mutationFn: async (session) => {
       const response = await api.studySessions.create(session);
       return response.json();
     },
@@ -40,7 +39,7 @@ export function useCreateStudySession() {
         description: "Study session created successfully",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to create study session",
@@ -55,7 +54,7 @@ export function useUpdateStudySession() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, session }: { id: number; session: any }) => {
+    mutationFn: async ({ id, session }) => {
       const response = await api.studySessions.update(id, session);
       return response.json();
     },
@@ -67,7 +66,7 @@ export function useUpdateStudySession() {
         description: "Study session updated successfully",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to update study session",

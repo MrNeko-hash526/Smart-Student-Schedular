@@ -9,43 +9,7 @@ import { db } from "./db";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { addDays, format } from "date-fns";
 
-export interface IStorage {
-  // User methods
-  getUser(id: number): Promise<any | undefined>;
-  getUserByUsername(username: string): Promise<any | undefined>;
-  createUser(user: any): Promise<any>;
-
-  // Subject methods
-  getSubjects(userId: number): Promise<any[]>;
-  getSubject(id: number): Promise<any | undefined>;
-  createSubject(subject: any): Promise<any>;
-  updateSubject(id: number, subject: any): Promise<any | undefined>;
-  deleteSubject(id: number): Promise<boolean>;
-
-  // Task methods
-  getTasks(userId: number): Promise<any[]>;
-  getTask(id: number): Promise<any | undefined>;
-  createTask(task: any): Promise<any>;
-  updateTask(id: number, task: any): Promise<any | undefined>;
-  deleteTask(id: number): Promise<boolean>;
-  getTasksByStatus(userId: number, status: string): Promise<any[]>;
-  getUpcomingTasks(userId: number, days?: number): Promise<any[]>;
-
-  // Study session methods
-  getStudySessions(userId: number): Promise<any[]>;
-  getStudySession(id: number): Promise<any | undefined>;
-  createStudySession(session: any): Promise<any>;
-  updateStudySession(id: number, session: any): Promise<any | undefined>;
-  deleteStudySession(id: number): Promise<boolean>;
-  getTodaysSessions(userId: number): Promise<any[]>;
-
-  // User stats methods
-  getUserStats(userId: number, date: string): Promise<any | undefined>;
-  createOrUpdateUserStats(stats: any): Promise<any>;
-  getWeeklyStats(userId: number): Promise<any[]>;
-}
-
-export class DatabaseStorage implements IStorage {
+export class DatabaseStorage {
   // User methods
   async getUser(id: number): Promise<any | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));

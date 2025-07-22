@@ -1,10 +1,9 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
+import { createServer } from "http";
 import { storage } from "./storage";
 import { insertTaskSchema, insertStudySessionSchema, insertSubjectSchema } from "@shared/schema";
 import { z } from "zod";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app) {
   // Demo user ID for simplicity - in a real app, this would come from authentication
   const DEMO_USER_ID = 1;
 
@@ -68,7 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/tasks/upcoming", async (req, res) => {
     try {
-      const days = req.query.days ? parseInt(req.query.days as string) : 7;
+      const days = req.query.days ? parseInt(req.query.days) : 7;
       const tasks = await storage.getUpcomingTasks(DEMO_USER_ID, days);
       res.json(tasks);
     } catch (error) {

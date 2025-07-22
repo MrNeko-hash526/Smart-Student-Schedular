@@ -1,10 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import type { TaskWithSubject } from "@shared/schema";
 
 export function useTasks() {
-  return useQuery<TaskWithSubject[]>({
+  return useQuery({
     queryKey: ["/api/tasks"],
     queryFn: async () => {
       const response = await api.tasks.getAll();
@@ -13,8 +12,8 @@ export function useTasks() {
   });
 }
 
-export function useUpcomingTasks(days?: number) {
-  return useQuery<TaskWithSubject[]>({
+export function useUpcomingTasks(days) {
+  return useQuery({
     queryKey: ["/api/tasks/upcoming", days],
     queryFn: async () => {
       const response = await api.tasks.getUpcoming(days);
@@ -28,7 +27,7 @@ export function useCreateTask() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (task: any) => {
+    mutationFn: async (task) => {
       const response = await api.tasks.create(task);
       return response.json();
     },
@@ -40,7 +39,7 @@ export function useCreateTask() {
         description: "Task created successfully",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to create task",
@@ -55,7 +54,7 @@ export function useUpdateTask() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, task }: { id: number; task: any }) => {
+    mutationFn: async ({ id, task }) => {
       const response = await api.tasks.update(id, task);
       return response.json();
     },
@@ -67,7 +66,7 @@ export function useUpdateTask() {
         description: "Task updated successfully",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to update task",
@@ -82,7 +81,7 @@ export function useDeleteTask() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id) => {
       await api.tasks.delete(id);
     },
     onSuccess: () => {
@@ -93,7 +92,7 @@ export function useDeleteTask() {
         description: "Task deleted successfully",
       });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
         title: "Error",
         description: error.message || "Failed to delete task",
