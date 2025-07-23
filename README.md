@@ -58,9 +58,6 @@ Install dependencies:
 ```
 npm install
 ```
-Configure environment:
-```
-```
 ## Database Setup
 ```
 1. Create a new Supabase project
