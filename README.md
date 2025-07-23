@@ -44,20 +44,13 @@ npm install
 ```
 Configure environment:
 ```
-DATABASE_URL=your_neon_postgres_url_here
-PORT=5000
+## Database Setup
 ```
-
-env
-Copy
-Edit
-DATABASE_URL=your_neon_postgres_url_here
-PORT=5000
-Set up the database schema:
-(Refer to the shared/ directory for schema management via Drizzle ORM.)
+1. Create a new Supabase project
+2. Run the SQL migration in `supabase/migrations/create_study_scheduler_complete.sql`
+3. Update your environment variables with the project URL and anon key
 
 🧪 Running the App
-🔧 Frontend only
 ```
 npm run dev:frontend
 ```
