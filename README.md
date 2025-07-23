@@ -53,12 +53,13 @@
 ```bash
 git clone https://github.com/MrNeko-hash526/Smart-Student-Schedular.git
 cd Smart-Student-Schedular
-
+```
 Install dependencies:
 ```
 npm install
 ```
 Configure environment:
+```
 ```
 ## Database Setup
 ```
@@ -68,11 +69,13 @@ Configure environment:
 
 🧪 Running the App
 ```
+```
 npm run dev:frontend
 ```
-🌐 Full stack (frontend + backend)
 ```
+🌐 Full stack (frontend + backend)
 npm run dev
+```
 ```
 📁 Project Structure
 
