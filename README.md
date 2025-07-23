@@ -75,7 +75,7 @@ npm run dev:frontend
 npm run dev
 ```
 📁 Project Structure
-```
+
 Smart-Student-Schedular/
 ├── client/       → React frontend
 ├── server/       → Express backend
