@@ -4,15 +4,13 @@
 
 ---
 
-## ✨ Features
+## Features
 
-- 🧠 **Dashboard** with quick stats and recent activity  
-- 🗓️ **Calendar View** for study sessions and deadlines  
-- ✅ **Task Management** (create, edit, delete, mark complete)  
-- 📚 **Subject Organizer** to manage study areas  
-- ⏱️ **Study Session Tracker**  
-- 📊 **Analytics Dashboard** to track performance and progress  
-- 📱 **Responsive Design** for mobile and desktop  
+- 📚 Subject management with priorities and progress tracking
+- 📅 Study session scheduling with time slots
+- 📊 Progress analytics with interactive charts
+- 🔐 User authentication with Supabase
+- 📱 Responsive design for all devices
 
 ---
 
