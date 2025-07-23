@@ -4,14 +4,29 @@
 
 ---
 
-## Features
--🧠 Dashboard with quick stats and recent activity
--🗓️ Calendar View for study sessions and deadlines
--✅ Task Management (create, edit, delete, mark complete)
--📚 Subject Organizer to manage study areas
--⏱️ Study Session Tracker
--📊 Analytics Dashboard to track performance and progress
--📱 Responsive Design for mobile and desktop
+## ✨ Features
+
+- **🧠 Dashboard**  
+  View quick stats and recent activity to stay updated on your progress.
+
+- **🗓️ Calendar View**  
+  Schedule and visualize your study sessions and deadlines with ease.
+
+- **✅ Task Management**  
+  Create, edit, delete, and mark tasks as complete to stay organized.
+
+- **📚 Subject Organizer**  
+  Categorize and manage your study areas efficiently.
+
+- **⏱️ Study Session Tracker**  
+  Track the time you spend studying and build consistent habits.
+
+- **📊 Analytics Dashboard**  
+  Monitor your performance and progress through visual insights.
+
+- **📱 Responsive Design**  
+  Optimized for both mobile and desktop use.
+
 
 ---
 
