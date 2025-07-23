@@ -5,7 +5,6 @@
 ---
 
 ## Features
-
 🧠 Dashboard with quick stats and recent activity
 🗓️ Calendar View for study sessions and deadlines
 ✅ Task Management (create, edit, delete, mark complete)
@@ -13,8 +12,6 @@
 ⏱️ Study Session Tracker
 📊 Analytics Dashboard to track performance and progress
 📱 Responsive Design for mobile and desktop
-
-
 ---
 
 ## 🛠️ Tech Stack
